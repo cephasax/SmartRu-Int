@@ -6,7 +6,6 @@ public class Raspberry {
 
 	private String identificador;
 	private ArrayList<Sensor> sensores;
-Sensor joao;
 
 	public Raspberry(String identificador) {
 		this.identificador = identificador;
