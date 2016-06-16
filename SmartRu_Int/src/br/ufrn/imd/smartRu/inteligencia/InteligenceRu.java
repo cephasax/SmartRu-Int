@@ -30,17 +30,40 @@ public class InteligenceRu {
 		return builder.toString();
 	}
 	
-	public boolean[][] receberMatriz(){
-		boolean[][] matriz = new boolean
+	public int[][] receberMatriz(){
+		int[][] matriz = new int
 				[appFila.getNumeroLinhas()][appFila.getNumeroColunas()];
+		
+		/**
+		 * Percorre todos os Raspberrys cadastrados por ordem de cadastro.
+		 * Inclui como sensor da fila todos os sensores do raspberry atual 
+		 * ate que nao haja mais nenhum sensor. Apos isso segue para o proximo raspberry
+		 * 
+		 * Repete o passo anterior ate que nao haja mais raspberrys no array
+		*/
+		
+		double v = -1;
 		
 		for(int i = 0; i < appFila.getNumeroLinhas(); i++){
 			for(int j = 0; j < appFila.getNumeroColunas(); j++){
-				if(appFila.getRasps().get(i).getSensores().get(j).getValor() >= VALOR_PADRAO){
-					matriz[i][j] = true;
+				
+				v = -1;
+				
+				if((i < appFila.getRasps().size()) && 
+						(j < appFila.getRasps().get(i).getSensores().size())){
+					
+					v = appFila.getRasps().get(i).getSensores().get(j).getValor();
 				}
-				else{
-					matriz[i][j] = false;
+								
+				//verificacao do valor do sensor e insercao na matriz de inteiros
+				if( (v >= 0) && (v <= VALOR_PADRAO)){
+					matriz[i][j] = 1;
+				}
+				else if(v > VALOR_PADRAO){
+					matriz[i][j] = 0;
+				}
+				else if(v < 0){
+					matriz[i][j] = -1;
 				}
 			}
 		}

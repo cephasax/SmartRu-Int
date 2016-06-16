@@ -14,6 +14,7 @@ public class FilaRu{
 	public FilaRu(int numeroLinhas, int numeroColunas){
 		this.numeroLinhas = numeroLinhas;
 		this.numeroColunas = numeroColunas;
+		rasps = new ArrayList<Raspberry>();
 	}
 	
 	public Raspberry getRaspberryNome(String nome){
