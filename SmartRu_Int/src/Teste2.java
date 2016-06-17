@@ -22,6 +22,8 @@ public class Teste2{
 			}
 			System.out.print("\n");
 		}
+		
+		System.out.println("Porcentagem da fila: " + iu.percentFila(mat));
 	}
 	
 }

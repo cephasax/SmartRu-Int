@@ -109,4 +109,19 @@ public class InteligenceRu {
 		return userJSONString;
 	}
 	
+	public double percentFila(int mat[][]){
+		int linha = appFila.getNumeroLinhas(), coluna = appFila.getNumeroColunas();
+		double cont = 0, total = 0;
+		for(int i=0; i<linha; i++){
+			for(int j=0; j<coluna; j++){
+				if(mat[i][j]==1)
+					cont++;
+				
+				total++;
+			}
+		}
+		
+		return (cont/total);
+	}
+	
 }
