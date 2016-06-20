@@ -23,7 +23,7 @@ public class InteligenceRu {
 		if(appFila.getRaspberryNome(rasp.getIdentificador()) == null){
 			appFila.incluirRasp(rasp);
 		}
-		System.out.println("Raspberry" + rasp.getIdentificador()+ "incluido com sucesso");
+		System.out.println("Raspberry " + rasp.getIdentificador() + " incluido com sucesso");
 	}
 	
  	public Raspberry loadRaspFromJSON(String jsonString) {
@@ -123,5 +123,5 @@ public class InteligenceRu {
 		
 		return (cont/total);
 	}
-	
+
 }

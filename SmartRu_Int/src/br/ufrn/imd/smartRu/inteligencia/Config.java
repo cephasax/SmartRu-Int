@@ -9,15 +9,15 @@ import com.google.gson.Gson;
 
 public class Config {
 
-	private int numeroLinhas = 3;
-	private int numeroColunas = 4;
+	private int numeroLinhas;
+	private int numeroColunas;
 	private String base[][];
 
 	public Config() {
 		base = new String[][] { 
 			{ "R1-S1", "R1-S2", "R2-S1", "R2-S2" }, 
 			{ "R1-S3", "R1-S4", "R2-S3", "R2-S4" },
-			{ "R1-S5", "R1-S6", "R2-S5", "R2-S6" } };
+			{ "R1-S5", "R1-S6", "R2-S5", "R2-S6" }};
 	}
 
 	public String mock(String nome) {
