@@ -34,6 +34,10 @@ public class InteligenceRu {
 			nomesRasps.add(rasp.getIdentificador());
 			System.out.println("Raspberry " + rasp.getIdentificador() + " incluido com sucesso");
 		}
+<<<<<<< HEAD
+=======
+		System.out.println("Raspberry " + rasp.getIdentificador() + " incluido com sucesso");
+>>>>>>> a263669dc6bff88a193477ec13119a51565af969
 	}
 
 	public Raspberry loadRaspFromJSON(String jsonString) {
