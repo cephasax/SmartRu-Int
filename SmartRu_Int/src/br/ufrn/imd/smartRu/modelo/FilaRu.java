@@ -30,4 +30,13 @@ public class FilaRu{
 	public void setDispositivos(ArrayList<Dispositivo> dispositivos) {
 		this.dispositivos = dispositivos;
 	}
+	
+	public void imprimirDadosFila(){
+		for(Dispositivo d: dispositivos){
+			System.out.println("Dispositivo : " + d.getIdentificador());
+			for(Sensor s: d.getSensores()){
+				System.out.println("\t Sensor: " + s.getNome() + " - valor: " + s.getValor());
+			}
+		}
+	}
 }

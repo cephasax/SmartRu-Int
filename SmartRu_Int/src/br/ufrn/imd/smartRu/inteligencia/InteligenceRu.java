@@ -15,14 +15,14 @@ public class InteligenceRu {
 	// Configuracoes e mock
 	private Config config; // 3 linhas e 4 colunas - 20-06-2016
 
-	// controles
-	private int controleMatriz = 0;
+	// controles  para update da matriz atual
 	private ArrayList<Integer> controlesUpdate;
 	
-	public InteligenceRu(){
-		this.config = new Config();
+	public InteligenceRu(Config conf){
+		this.config = conf;
 		this.appFila = new FilaRu(config.getNumeroLinhas(), config.getNumeroColunas());
 		this.historicoBases = new ArrayList<int[][]>();
+		this.controlesUpdate = new ArrayList<Integer>();
 	}
 	
 	public void registrarDispositivo(String nomeDispositivo){
@@ -35,7 +35,7 @@ public class InteligenceRu {
 				disp = new Dispositivo(nomeDispositivo);
 				appFila.incluirDispositivo(disp);
 				System.out.println("Dispositivo: " + nomeDispositivo + " incluido com sucesso");
-				controlesUpdate.set(appFila.getDispositivos().indexOf(disp), 0);
+				controlesUpdate.add(0);
 			}
 		}
 		else{
@@ -59,7 +59,7 @@ public class InteligenceRu {
 		}
 	}
 
-	public int[][] montarMatriz(){
+	public void montarMatriz(){
 		int a = 0;
 		double v = -1;
 		int matriz[][] = new int[config.getNumeroLinhas()][config.getNumeroColunas()];
@@ -77,15 +77,14 @@ public class InteligenceRu {
 		//imprimir indices de dispositivos sem leitura atual
 		if(a > 0){
 			System.out.println(st.toString());
-			return null;
 		}
 		
 		//montar matriz
 		else{
 			for(int i = 0; i < config.getNumeroLinhas(); i++){
 				for(int j = 0; j < config.getNumeroColunas(); j++){
-					String nomeDispositivo = config.base[i][j].substring(0, 1);
-					String nomeSensor = config.base[i][j].substring(3, 4);
+					String nomeDispositivo = config.base[i][j].substring(0, 2);
+					String nomeSensor = config.base[i][j].substring(3, 5);
 					v = appFila.getDispositivoNome(nomeDispositivo)
 									.getSensorNome(nomeSensor).getValor();
 					
@@ -98,6 +97,7 @@ public class InteligenceRu {
 					else{
 						matriz[i][j] = -1;
 					}
+					v  = -1;
 				}
 			}
 			//zerar controles de updates
@@ -105,27 +105,29 @@ public class InteligenceRu {
 				controlesUpdate.set(i, 0);
 			}
 			historicoBases.add(matriz);
-			return matriz;
 		}
 	}
 	
-	public double percentFila(int mat[][]) {
+	public double percentFila() {
 
 		if(historicoBases.size() == config.getNumeroLeituras()){
-			int matriz[][]  = calcularMatrizGeral();
+			int mat[][]  = calcularMatrizGeral();
 			
 			double cont = 0, total = 0;
 			for (int i = 0; i < config.getNumeroLinhas(); i++) {
 				for (int j = 0; j < config.getNumeroColunas(); j++) {
 					if (mat[i][j] == 1){
 						cont++;
-						total++;
 					}
+					total++;
 				}
 			}
 			return (cont / total);
 		}
-		return 0.0;
+		else{
+			System.out.println("Nao ha leituras suficientes para gerar o percentual");
+			return 0.0;
+		}
 	}
 	
 	private int[][] calcularMatrizGeral(){
@@ -150,7 +152,9 @@ public class InteligenceRu {
 		
 		for (int i = 0; i < config.getNumeroLinhas(); i++) {
 			for (int j = 0; j < config.getNumeroColunas(); j++) {
-				if ((matriz[i][j] / config.getNumeroLeituras()) * 100 > config.getPercentLeiturasSensor()){
+				double resultado = matriz[i][j] / (double)config.getNumeroLeituras() * 100;
+				
+				if (resultado > config.getPercentLeiturasSensor()){
 					matriz[i][j] = 1;
 				}
 				else{
@@ -159,5 +163,58 @@ public class InteligenceRu {
 			}
 		}
 		return matriz;
+	}
+
+	public void imprimeMatriz(int[][] matriz){
+		
+		for(int i = 0; i < config.getNumeroLinhas(); i++){
+			for(int j = 0; j < config.getNumeroColunas(); j++){
+				System.out.print(matriz[i][j] + "\t");
+			}
+			System.out.println();
+		}
+		System.out.println();
+	}
+
+
+	//GETTERS and SETTERS
+	
+	public FilaRu getAppFila() {
+		return appFila;
+	}
+
+	
+	public void setAppFila(FilaRu appFila) {
+		this.appFila = appFila;
+	}
+
+	
+	public ArrayList<int[][]> getHistoricoBases() {
+		return historicoBases;
+	}
+
+	
+	public void setHistoricoBases(ArrayList<int[][]> historicoBases) {
+		this.historicoBases = historicoBases;
+	}
+
+	
+	public Config getConfig() {
+		return config;
+	}
+
+	
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
+	
+	public ArrayList<Integer> getControlesUpdate() {
+		return controlesUpdate;
+	}
+
+	
+	public void setControlesUpdate(ArrayList<Integer> controlesUpdate) {
+		this.controlesUpdate = controlesUpdate;
 	}
 }
