@@ -4,8 +4,6 @@ package br.ufrn.imd.smartRu.inteligencia;
  * 
  * @authors Anderson, Cephas,  Paulo, Sandino
  *
- *
- *
  */
 public class Config {
 

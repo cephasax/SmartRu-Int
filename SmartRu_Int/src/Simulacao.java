@@ -36,11 +36,10 @@ public class Simulacao{
 			qtdMatrizes++;
 		}
 		
+		
 		double resultado = iRu.percentFila();
 		
 		System.out.println(resultado);
-
-		
 		
 	}
 	

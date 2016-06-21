@@ -116,12 +116,15 @@ public class InteligenceRu {
 			double cont = 0, total = 0;
 			for (int i = 0; i < config.getNumeroLinhas(); i++) {
 				for (int j = 0; j < config.getNumeroColunas(); j++) {
-					if (mat[i][j] == 1){
-						cont++;
+					if (mat[i][j] == 1 || mat[i][j] == 0){
+						if(mat[i][j] == 1){
+							cont++;
+						}
+						total++;
 					}
-					total++;
 				}
 			}
+			historicoBases.clear();
 			return (cont / total);
 		}
 		else{
@@ -143,7 +146,7 @@ public class InteligenceRu {
 		for(int i = 0; i < config.getNumeroLinhas(); i++){
 			for(int j = 0; j < config.getNumeroColunas(); j++){
 				for(int cont = 0; cont < historicoBases.size(); cont++){
-					if(historicoBases.get(cont)[i][j] >= 0){
+					if(historicoBases.get(cont)[i][j] == 1){
 						matriz[i][j] += historicoBases.get(cont)[i][j];
 					}
 				}
@@ -154,7 +157,7 @@ public class InteligenceRu {
 			for (int j = 0; j < config.getNumeroColunas(); j++) {
 				double resultado = matriz[i][j] / (double)config.getNumeroLeituras() * 100;
 				
-				if (resultado > config.getPercentLeiturasSensor()){
+				if (resultado >= config.getPercentLeiturasSensor()){
 					matriz[i][j] = 1;
 				}
 				else{
