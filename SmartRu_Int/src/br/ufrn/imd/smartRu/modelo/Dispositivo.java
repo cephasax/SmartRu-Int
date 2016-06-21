@@ -2,12 +2,12 @@ package br.ufrn.imd.smartRu.modelo;
 
 import java.util.ArrayList;
 
-public class Raspberry {
+public class Dispositivo {
 
 	private String identificador;
 	private ArrayList<Sensor> sensores;
 
-	public Raspberry(String identificador) {
+	public Dispositivo(String identificador) {
 		this.identificador = identificador;
 		this.sensores = new ArrayList<Sensor>();
 	}

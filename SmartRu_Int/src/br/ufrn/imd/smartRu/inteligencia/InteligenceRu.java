@@ -4,132 +4,160 @@ import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
+import br.ufrn.imd.smartRu.modelo.Dispositivo;
 import br.ufrn.imd.smartRu.modelo.FilaRu;
-import br.ufrn.imd.smartRu.modelo.Raspberry;
 
 public class InteligenceRu {
 
 	private FilaRu appFila;
 	private ArrayList<int[][]> historicoBases;
-
-	// Constantes
+	
+	// Configuracoes e mock
 	private Config config; // 3 linhas e 4 colunas - 20-06-2016
-	private final double VALOR_PADRAO = 90.0;
 
 	// controles
 	private int controleMatriz = 0;
-	private ArrayList<String> nomesRasps;
-
-	public InteligenceRu() {
+	private ArrayList<Integer> controlesUpdate;
+	
+	public InteligenceRu(){
 		this.config = new Config();
 		this.appFila = new FilaRu(config.getNumeroLinhas(), config.getNumeroColunas());
-		historicoBases = new ArrayList<int[][]>();
-		nomesRasps = new ArrayList<String>();
+		this.historicoBases = new ArrayList<int[][]>();
 	}
-
-	public void adicionarRaspberryFromJason(String json) {
-		Raspberry rasp = loadRaspFromJSON(json);
-		if (appFila.getRaspberryNome(rasp.getIdentificador()) == null) {
-			appFila.incluirRasp(rasp);
-			nomesRasps.add(rasp.getIdentificador());
-			System.out.println("Raspberry " + rasp.getIdentificador() + " incluido com sucesso");
+	
+	public void registrarDispositivo(String nomeDispositivo){
+		if(appFila.getDispositivos().size() < config.getNumeroDispositivos()){
+			Dispositivo disp = appFila.getDispositivoNome(nomeDispositivo);
+			if(disp != null){
+				System.out.println("Dispositivo: " + nomeDispositivo + " ja existe no sistema");
+			}
+			else{
+				disp = new Dispositivo(nomeDispositivo);
+				appFila.incluirDispositivo(disp);
+				System.out.println("Dispositivo: " + nomeDispositivo + " incluido com sucesso");
+				controlesUpdate.set(appFila.getDispositivos().indexOf(disp), 0);
+			}
 		}
-<<<<<<< HEAD
-=======
-		System.out.println("Raspberry " + rasp.getIdentificador() + " incluido com sucesso");
->>>>>>> a263669dc6bff88a193477ec13119a51565af969
-	}
-
-	public Raspberry loadRaspFromJSON(String jsonString) {
-		Gson gson = new Gson();
-		Raspberry rasp = gson.fromJson(jsonString, Raspberry.class);
-		return rasp;
-	}
-
-	public void atualizarAplicacao(String dados) {
-		
-	}
-
-	public String VerificarRasps() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Raspberrys pertencentes ao sistema: \n");
-		for (String nome: nomesRasps) {
-			builder.append(nome);
-			builder.append("\n");
+		else{
+			System.out.println("Numero maximo de dispositivos alcancado"
+					+ " \n - modifique as configuracoes para poder incluir");
 		}
-		return builder.toString();
+	}
+	
+	public void salvarLeiturasDispositivo(String jsonData){
+		Dispositivo disp = new Gson().fromJson(jsonData, Dispositivo.class);
+		Dispositivo temp = appFila.getDispositivoNome(disp.getIdentificador());
+		if(temp != null){
+			int onde = appFila.getDispositivos().indexOf(temp);
+			if(controlesUpdate.get(onde) == 0){
+				appFila.getDispositivos().set(onde, disp);
+				controlesUpdate.set(appFila.getDispositivos().indexOf(disp), 1);
+			}
+		}
+		else{
+			System.out.println("Dispositivo nao incluido no sistema");
+		}
 	}
 
-	public int[][] receberMatriz() {
-		int[][] matriz = new int[appFila.getNumeroLinhas()][appFila.getNumeroColunas()];
-
-		/**
-		 * Percorre todos os Raspberrys cadastrados por ordem de cadastro.
-		 * Inclui como sensor da fila todos os sensores do raspberry de acordo
-		 * com a posicao declarada no atributo base da classe Config
-		 * 
-		 * Repete o passo anterior ate que nao haja mais raspberrys no array
-		 */
-
+	public int[][] montarMatriz(){
+		int a = 0;
 		double v = -1;
+		int matriz[][] = new int[config.getNumeroLinhas()][config.getNumeroColunas()];
+		StringBuilder st = new StringBuilder();
+		st.append("Dispositivos pendentes de leitura: ");
+		
+		//checar se todos os dispositivos tem leituras validas
+		for(int i = 0; i < controlesUpdate.size(); i++){
+			if(controlesUpdate.get(i) == 0){
+				a++;
+				st.append("\n Dispositivo: " + i);
+			}
+		}
+		
+		//imprimir indices de dispositivos sem leitura atual
+		if(a > 0){
+			System.out.println(st.toString());
+			return null;
+		}
+		
+		//montar matriz
+		else{
+			for(int i = 0; i < config.getNumeroLinhas(); i++){
+				for(int j = 0; j < config.getNumeroColunas(); j++){
+					String nomeDispositivo = config.base[i][j].substring(0, 1);
+					String nomeSensor = config.base[i][j].substring(3, 4);
+					v = appFila.getDispositivoNome(nomeDispositivo)
+									.getSensorNome(nomeSensor).getValor();
+					
+					if(v >= 0 && v <= config.getValorPadrao()){
+						matriz[i][j] = 1;
+					}
+					else if(v > config.getValorPadrao()){
+						matriz[i][j] = 0;
+					}
+					else{
+						matriz[i][j] = -1;
+					}
+				}
+			}
+			//zerar controles de updates
+			for(int i = 0; i < controlesUpdate.size(); i++){
+				controlesUpdate.set(i, 0);
+			}
+			historicoBases.add(matriz);
+			return matriz;
+		}
+	}
+	
+	public double percentFila(int mat[][]) {
 
-		for (int i = 0; i < appFila.getNumeroLinhas(); i++) {
-			for (int j = 0; j < appFila.getNumeroColunas(); j++) {
-				
-				String registro = new String(config.base[i][j]);
-				String nomeRasp = new String(registro.substring(0, 1));
-				String nomeSensor = new String(registro.substring(3, 4));;
+		if(historicoBases.size() == config.getNumeroLeituras()){
+			int matriz[][]  = calcularMatrizGeral();
 			
-				v = appFila.getRaspberryNome(nomeRasp).getSensorNome(nomeSensor).getValor();				
-				// verificacao do valor do sensor e insercao na matriz de
-				// inteiros
-				if ((v >= 0) && (v <= VALOR_PADRAO)) {
+			double cont = 0, total = 0;
+			for (int i = 0; i < config.getNumeroLinhas(); i++) {
+				for (int j = 0; j < config.getNumeroColunas(); j++) {
+					if (mat[i][j] == 1){
+						cont++;
+						total++;
+					}
+				}
+			}
+			return (cont / total);
+		}
+		return 0.0;
+	}
+	
+	private int[][] calcularMatrizGeral(){
+		int matriz[][]  = new int[config.getNumeroLinhas()][config.getNumeroColunas()]; 
+		
+		//carregar matrizGeral com zeros
+		for(int i = 0; i < config.getNumeroLinhas(); i++){
+			for(int j = 0; j < config.getNumeroColunas(); j++){
+				matriz[i][j] = 0;
+			}
+		}
+		
+		for(int i = 0; i < config.getNumeroLinhas(); i++){
+			for(int j = 0; j < config.getNumeroColunas(); j++){
+				for(int cont = 0; cont < historicoBases.size(); cont++){
+					if(historicoBases.get(cont)[i][j] >= 0){
+						matriz[i][j] += historicoBases.get(cont)[i][j];
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < config.getNumeroLinhas(); i++) {
+			for (int j = 0; j < config.getNumeroColunas(); j++) {
+				if ((matriz[i][j] / config.getNumeroLeituras()) * 100 > config.getPercentLeiturasSensor()){
 					matriz[i][j] = 1;
 				}
-				else if (v > VALOR_PADRAO) {
+				else{
 					matriz[i][j] = 0;
-				}
-				else if (v < 0) {
-					matriz[i][j] = -1;
 				}
 			}
 		}
 		return matriz;
 	}
-
-	/*
-	 * public String mock(){ Raspberry rasp = new Raspberry("Rasp1"); Random
-	 * gerador = new Random();
-	 * 
-	 * Gson gson = new Gson();
-	 * 
-	 * for (int i = 0; i < 6; i++) {
-	 * 
-	 * Sensor sensor = new Sensor();
-	 * 
-	 * double numero = gerador.nextDouble() * 100; // [0,100[ double numero1 =
-	 * Math.round(numero * 100) / 100d; System.out.println(numero1);
-	 * sensor.setNome("s" + i); sensor.setValor(numero1);
-	 * rasp.adicionarSensor(sensor); }
-	 * 
-	 * String userJSONString = gson.toJson(rasp);
-	 * 
-	 * return userJSONString; }
-	 */
-
-	public double percentFila(int mat[][]) {
-		int linha = appFila.getNumeroLinhas(), coluna = appFila.getNumeroColunas();
-		double cont = 0, total = 0;
-		for (int i = 0; i < linha; i++) {
-			for (int j = 0; j < coluna; j++) {
-				if (mat[i][j] == 1)
-					cont++;
-
-				total++;
-			}
-		}
-
-		return (cont / total);
-	}
-
 }

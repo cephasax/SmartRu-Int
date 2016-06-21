@@ -2,16 +2,30 @@ package br.ufrn.imd.smartRu.inteligencia;
 
 import java.util.Random;
 
-import br.ufrn.imd.smartRu.modelo.Raspberry;
-import br.ufrn.imd.smartRu.modelo.Sensor;
-
 import com.google.gson.Gson;
 
+import br.ufrn.imd.smartRu.modelo.Dispositivo;
+import br.ufrn.imd.smartRu.modelo.Sensor;
+
+
+/**
+ * 
+ * @authors Anderson, Cephas,  Paulo, Sandino
+ *
+ *
+ *
+ */
 public class Config {
 
-	private int numeroLinhas;
-	private int numeroColunas;
-	private String base[][];
+	//Constantes de configuracao
+	private final int numeroDispositivos = 2;
+	private final int numeroLinhas = 3;
+	private final int numeroColunas = 4;
+	private final int numeroLeituras = 20;
+	private final double percentLeiturasSensor = 70;
+	private final double VALOR_PADRAO = 90.0;
+	
+	public final String base[][];
 
 	public Config() {
 		base = new String[][] { 
@@ -22,7 +36,7 @@ public class Config {
 
 	public String mock(String nome) {
 
-		Raspberry rasp = new Raspberry(nome);
+		Dispositivo disp = new Dispositivo(nome);
 		Random gerador = new Random();
 
 		Gson gson = new Gson();
@@ -36,10 +50,10 @@ public class Config {
 			System.out.println(numero1);
 			sensor.setNome("s" + i);
 			sensor.setValor(numero1);
-			rasp.adicionarSensor(sensor);
+			disp.adicionarSensor(sensor);
 		}
 
-		String userJSONString = gson.toJson(rasp);
+		String userJSONString = gson.toJson(disp);
 
 		return userJSONString;
 	}
@@ -48,24 +62,27 @@ public class Config {
 		return numeroLinhas;
 	}
 
-	public void setNumeroLinhas(int numeroLinhas) {
-		this.numeroLinhas = numeroLinhas;
-	}
-
 	public int getNumeroColunas() {
 		return numeroColunas;
-	}
-
-	public void setNumeroColunas(int numeroColunas) {
-		this.numeroColunas = numeroColunas;
 	}
 
 	public String[][] getBase() {
 		return base;
 	}
 
-	public void setBase(String[][] base) {
-		this.base = base;
+	public int getNumeroDispositivos() {
+		return numeroDispositivos;
 	}
 
+	public int getNumeroLeituras() {
+		return numeroLeituras;
+	}
+	
+	public double getValorPadrao() {
+		return VALOR_PADRAO;
+	}
+
+	public double getPercentLeiturasSensor() {
+		return percentLeiturasSensor;
+	}	
 }
